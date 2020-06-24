@@ -29,6 +29,12 @@ namespace registry.Controllers
         public async Task<ActionResult> GetLanguages()
         {
             var list = await Context.languages.ToListAsync();
+
+            foreach (var item in list)
+            {
+                item.concepts = await GetConceptsByLanguageId(item.id);
+            }
+
             return Ok(list);
         }
 
@@ -37,6 +43,12 @@ namespace registry.Controllers
         public async Task<ActionResult> GetConcepts()
         {
             var list = await Context.concepts.ToListAsync();
+
+            foreach (var item in list)
+            {
+                item.examples = await GetExamplesByConceptId(item.id);
+            }
+
             return Ok(list);
         }
 
@@ -46,6 +58,30 @@ namespace registry.Controllers
         {
             var list = await Context.examples.ToListAsync();
             return Ok(list);
+        }
+
+        private async Task<Concepts[]> GetConceptsByLanguageId(int id)
+        {
+            var concepts = await Context.concepts
+               .AsNoTracking()
+               .Where(con => con.languageId == id)
+               .ToArrayAsync();
+
+            foreach (var item in concepts)
+            {
+                item.examples = await GetExamplesByConceptId(item.id);
+            }
+
+            return concepts;
+        }
+
+        private async Task<Examples[]> GetExamplesByConceptId(int id)
+        {
+            var examples = await Context.examples
+               .AsNoTracking()
+               .Where(expl => expl.conceptId == id)
+               .ToArrayAsync();
+            return examples;
         }
 
         //     [HttpGet("{system}")]

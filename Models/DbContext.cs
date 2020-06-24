@@ -19,6 +19,8 @@ namespace registry.PostgreSQL
     {
         public int id { get; set; }
         public string name { get; set; }
+
+        public Concepts[] concepts { get; set; }
     }
 
     public class Concepts
@@ -30,6 +32,7 @@ namespace registry.PostgreSQL
         public string method { get; set; }
         public int languageId { get; set; }
         public Languages language { get; set; }
+        public Examples[] examples { get; set; }
     }
 
     public class Examples
