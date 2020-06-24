@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  service:
+    build:
+      cache_from:
+      - ${CACHE_FROM_CURRENT_TARGET}
+      - ${CACHE_FROM_PREV_TARGET}
+      target: ${BUILD_TARGET}

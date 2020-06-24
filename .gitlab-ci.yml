@@ -1,0 +1,60 @@
+include:
+  - project: 'devops-front/gitlab-ci-base'
+    file: '/.gitlab-ci-base-docker.yml'
+    ref: 1.0.5
+  - project: 'devops-front/gitlab-ci-base'
+    file: '/.gitlab-ci-base-chart-build.yml'
+    ref: 1.0.5
+
+
+stages:
+- test
+- build
+
+
+.on-src:
+  image: ${BUILD_REGISTRY}/dotnet/core/sdk:3.1
+  before_script:
+  - cp -fv ca/* /usr/local/share/ca-certificates/
+  - update-ca-certificates
+
+test:
+  extends: .on-src
+  stage: test
+  variables:
+    DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
+  script:
+  - dotnet restore -v q -s ${NEXUS_NUGET}
+  - dotnet build --no-restore
+
+
+build_branches:
+  extends: .build_base
+  stage: build
+  variables:
+    IMAGE_TAG_LIST: "${IMAGE_TAG_BRANCH}"
+  only:
+  - branches
+  except:
+  - tags
+  - master
+
+build_master:
+  extends: .build_base
+  stage: build
+  variables:
+    IMAGE_TAG_LIST: "${IMAGE_TAG_BRANCH} ${IMAGE_TAG_LATEST}"
+  only:
+  - master
+  except:
+  - tags
+
+build_stable:
+  extends: .build_base
+  stage: build
+  variables:
+    IMAGE_TAG_LIST: "${IMAGE_TAG_STABLE} ${IMAGE_TAG_COMMIT_TAG}"
+  only:
+  - tags
+  except:
+  - branches

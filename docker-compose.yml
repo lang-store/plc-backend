@@ -1,0 +1,20 @@
+version: '3.7'
+
+x-registry-args:
+  &registry-args
+  BUILD_REGISTRY: ${BUILD_REGISTRY}
+
+x-nexus-nuget-args:
+  &nexus-nuget-args
+  NEXUS_NUGET: ${NEXUS_NUGET}
+
+services:
+  service:
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    build:
+      context: .
+      args:
+        << : *nexus-nuget-args
+        << : *registry-args
+    ports:
+    - "5003:5003"
