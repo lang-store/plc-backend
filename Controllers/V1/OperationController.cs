@@ -24,50 +24,6 @@ namespace registry.Controllers
             _logger = logger;
         }
 
-        [HttpGet("languages")]
-        [Produces("application/json")]
-        public async Task<ActionResult> GetLanguages()
-        {
-            var list = await Context.languages.ToListAsync();
-
-            foreach (var item in list)
-            {
-                item.concepts = await GetConceptsByLanguageId(item.id);
-            }
-
-            return Ok(list);
-        }
-
-        [HttpPost("languages")]
-        [Produces("application/json")]
-        public async Task<ActionResult> CreateConcept(Languages language)
-        {
-            Context.languages.Add(language);
-            await Context.SaveChangesAsync();
-            return Ok();
-        }
-
-        [HttpPut("languages")]
-        public async Task<IActionResult> UpdateOperation(Languages language)
-        {
-            var lang = await Context.languages.SingleOrDefaultAsync(lang => lang.id == language.id);
-            if (lang == null)
-            {
-                return NotFound(language);
-            }
-
-            var item = await Context.languages.FindAsync(language.id);
-            if (item == null)
-            {
-                return NotFound(language.id);
-            }
-
-            item.name = language.name;
-            await Context.SaveChangesAsync();
-
-            return Ok();
-        }
-
         [HttpGet("concepts")]
         [Produces("application/json")]
         public async Task<ActionResult> GetConcepts()
