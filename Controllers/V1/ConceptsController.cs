@@ -13,12 +13,12 @@ namespace registry.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class LanguagesController : Controller
+    public class ConceptsController : Controller
     {
         readonly OperationContext Context;
-        readonly ILogger<LanguagesController> _logger;
+        readonly ILogger<ConceptsController> _logger;
 
-        public LanguagesController(OperationContext OperationContext, ILogger<LanguagesController> logger)
+        public ConceptsController(OperationContext OperationContext, ILogger<ConceptsController> logger)
         {
             Context = OperationContext;
             _logger = logger;
@@ -26,13 +26,13 @@ namespace registry.Controllers
 
         [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult> GetLanguages()
+        public async Task<ActionResult> GetConcepts()
         {
-            var list = await Context.languages.ToListAsync();
+            var list = await Context.concepts.ToListAsync();
 
             foreach (var item in list)
             {
-                item.concepts = await GetConceptsByLanguageId(item.id);
+                item.examples = await GetExamplesByConceptId(item.id);
             }
 
             return Ok(list);
@@ -40,56 +40,41 @@ namespace registry.Controllers
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult> CreateConcept(Languages language)
+        public async Task<ActionResult> CreateConcept(Concepts concept)
         {
-            Context.languages.Add(language);
+            Context.concepts.Add(concept);
             await Context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateLanguage(Languages language)
+        public async Task<IActionResult> UpdateConcept(Concepts concept)
         {
-            var lang = await Context.languages.SingleOrDefaultAsync(lang => lang.id == language.id);
-            if (lang == null)
+            var item = await Context.concepts.SingleOrDefaultAsync(concept => concept.id == concept.id);
+            if (item == null)
             {
-                return NotFound(language);
+                return NotFound(item);
             }
 
-            lang.name = language.name;
+            item.name = concept.name;
             await Context.SaveChangesAsync();
 
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteLanguage(int id)
+        public async Task<ActionResult> DeleteConcept(int id)
         {
-            var item = await Context.languages.FindAsync(id);
+            var item = await Context.concepts.FindAsync(id);
             if (item == null)
             {
                 return NotFound(id);
             }
 
-            Context.languages.Remove(item);
+            Context.concepts.Remove(item);
             await Context.SaveChangesAsync();
 
             return Ok(item);
-        }
-
-        private async Task<Concepts[]> GetConceptsByLanguageId(int id)
-        {
-            var concepts = await Context.concepts
-               .AsNoTracking()
-               .Where(con => con.languageId == id)
-               .ToArrayAsync();
-
-            foreach (var item in concepts)
-            {
-                item.examples = await GetExamplesByConceptId(item.id);
-            }
-
-            return concepts;
         }
 
         private async Task<Examples[]> GetExamplesByConceptId(int id)
@@ -100,6 +85,5 @@ namespace registry.Controllers
                .ToArrayAsync();
             return examples;
         }
-
     }
 }
