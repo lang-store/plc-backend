@@ -38,6 +38,36 @@ namespace registry.Controllers
             return Ok(list);
         }
 
+        [HttpPost("languages")]
+        [Produces("application/json")]
+        public async Task<ActionResult> CreateConcept(Languages language)
+        {
+            Context.languages.Add(language);
+            await Context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("languages")]
+        public async Task<IActionResult> UpdateOperation(Languages language)
+        {
+            var lang = await Context.languages.SingleOrDefaultAsync(lang => lang.id == language.id);
+            if (lang == null)
+            {
+                return NotFound(language);
+            }
+
+            var item = await Context.languages.FindAsync(language.id);
+            if (item == null)
+            {
+                return NotFound(language.id);
+            }
+
+            item.name = language.name;
+            await Context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         [HttpGet("concepts")]
         [Produces("application/json")]
         public async Task<ActionResult> GetConcepts()
@@ -52,12 +82,30 @@ namespace registry.Controllers
             return Ok(list);
         }
 
+        [HttpPost("examples")]
+        [Produces("application/json")]
+        public async Task<ActionResult> CreateConcept(Concepts concept)
+        {
+            Context.concepts.Add(concept);
+            await Context.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpGet("examples")]
         [Produces("application/json")]
         public async Task<ActionResult> GetExamples()
         {
             var list = await Context.examples.ToListAsync();
             return Ok(list);
+        }
+
+        [HttpPost("examples")]
+        [Produces("application/json")]
+        public async Task<ActionResult> CreateExample(Examples example)
+        {
+            Context.examples.Add(example);
+            await Context.SaveChangesAsync();
+            return Ok();
         }
 
         private async Task<Concepts[]> GetConceptsByLanguageId(int id)
