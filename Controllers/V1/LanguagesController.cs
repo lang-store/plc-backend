@@ -3,15 +3,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 using registry.PostgreSQL;
-using System;
+using Microsoft.AspNetCore.Cors;
 
 namespace registry.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
+    [EnableCors("OpenPolicy")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class LanguagesController : Controller
     {
