@@ -43,7 +43,7 @@ namespace registry.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateExample(Examples example)
         {
-            var item = await Context.examples.SingleOrDefaultAsync(example => example.id == example.id);
+            var item = await Context.examples.SingleOrDefaultAsync(empl => empl.id == example.id);
             if (item == null)
             {
                 return NotFound(item);

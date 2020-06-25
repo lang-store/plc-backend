@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using registry.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
+using System;
 
 namespace registry.Controllers
 {
@@ -50,13 +51,17 @@ namespace registry.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateConcept(Concepts concept)
         {
-            var item = await Context.concepts.SingleOrDefaultAsync(concept => concept.id == concept.id);
+            var item = await Context.concepts.SingleOrDefaultAsync(cntp => cntp.id == concept.id);
             if (item == null)
             {
                 return NotFound(item);
             }
 
             item.name = concept.name;
+            item.category = concept.category;
+            item.method = concept.method;
+            item.languageId = concept.languageId;
+
             await Context.SaveChangesAsync();
 
             return Ok();
