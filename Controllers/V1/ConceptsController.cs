@@ -25,6 +25,23 @@ namespace registry.Controllers
             _logger = logger;
         }
 
+        [HttpGet("{id}")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetConcept(int id)
+        {
+            var item = await Context.concepts
+               .AsNoTracking()
+               .SingleOrDefaultAsync(cnpt => cnpt.id == id);
+
+            if (item == null)
+            {
+                return NotFound(id);
+            }
+
+            item.examples = await GetExamplesByConceptId(item.id);
+            return Ok(item);
+        }
+
         [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult> GetConcepts()
