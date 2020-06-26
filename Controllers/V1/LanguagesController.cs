@@ -24,6 +24,23 @@ namespace registry.Controllers
             _logger = logger;
         }
 
+        [HttpGet("{id}")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetLanguages(int id)
+        {
+            var item = await Context.languages
+               .AsNoTracking()
+               .SingleOrDefaultAsync(lang => lang.id == id);
+
+            if (item == null)
+            {
+                return NotFound(id);
+            }
+
+            item.concepts = await GetConceptsByLanguageId(item.id);
+            return Ok(item);
+        }
+
         [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult> GetLanguages()
