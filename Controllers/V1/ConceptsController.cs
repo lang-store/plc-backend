@@ -45,7 +45,17 @@ namespace registry.Controllers
         {
             Context.concepts.Add(concept);
             await Context.SaveChangesAsync();
-            return Ok();
+
+            var item = await Context.concepts
+                .AsNoTracking()
+                .SingleOrDefaultAsync(cntp => cntp.name == concept.name && cntp.languageId == concept.languageId);
+
+            if (item == null)
+            {
+                return NotFound(concept);
+            }
+
+            return Ok(item);
         }
 
         [HttpPut]

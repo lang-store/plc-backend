@@ -44,7 +44,17 @@ namespace registry.Controllers
         {
             Context.languages.Add(language);
             await Context.SaveChangesAsync();
-            return Ok();
+
+            var item = await Context.languages
+                .AsNoTracking()
+                .SingleOrDefaultAsync(lang => lang.name == language.name);
+
+            if (item == null)
+            {
+                return NotFound(language);
+            }
+
+            return Ok(item);
         }
 
         [HttpPut]

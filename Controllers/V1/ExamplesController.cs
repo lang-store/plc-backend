@@ -37,7 +37,21 @@ namespace registry.Controllers
         {
             Context.examples.Add(example);
             await Context.SaveChangesAsync();
-            return Ok();
+
+            var item = await Context.examples
+               .AsNoTracking()
+               .SingleOrDefaultAsync(exmpl =>
+                    exmpl.example == example.example &&
+                    exmpl.conceptId == example.conceptId &&
+                    exmpl.notes == example.notes
+               );
+
+            if (item == null)
+            {
+                return NotFound(example);
+            }
+
+            return Ok(item);
         }
 
         [HttpPut]

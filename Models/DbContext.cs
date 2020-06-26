@@ -17,6 +17,7 @@ namespace registry.PostgreSQL
 
     public class Languages
     {
+        [Key]
         public int id { get; set; }
         public string name { get; set; }
 
